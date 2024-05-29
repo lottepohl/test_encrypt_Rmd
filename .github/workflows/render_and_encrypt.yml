@@ -27,6 +27,7 @@ jobs:
         run: Rscript render_and_encrypt.R
         env:
           PW_HTML_ENCRYPT: ${{ secrets.PW_HTML_ENCRYPT }}
+          GH_PAT: ${{ secrets.GH_PAT }}
 
       - name: Commit and push encrypted file
         run: |
