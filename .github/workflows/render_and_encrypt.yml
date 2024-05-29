@@ -3,6 +3,7 @@ name: Render and Encrypt Rmd Weekly
 on:
   schedule:
     - cron: '0 0 * * 0' # This cron expression runs the job every Sunday at midnight UTC
+  workflow_dispatch: # Allows manual triggers
 
 jobs:
   build:
