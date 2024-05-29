@@ -20,3 +20,4 @@ rmarkdown::render(input_Rmd, output_file = rendered_html)
 # Encrypt the HTML file
 encryptedRmd::encrypt_html_file(path = rendered_html, output_path = encrypted_html, key = pw_32)
 
+
