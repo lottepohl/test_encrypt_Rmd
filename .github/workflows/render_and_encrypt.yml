@@ -1,0 +1,38 @@
+name: Render and Encrypt Rmd Weekly
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # This cron expression runs the job every Sunday at midnight UTC
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: Install dependencies
+        run: |
+          R -e "install.packages('remotes')"
+          R -e "remotes::install_github('dirkschumacher/encryptedRmd')"
+          R -e "install.packages('rmarkdown')"
+          R -e "install.packages('digest')"
+
+      - name: Render and Encrypt
+        run: Rscript render_and_encrypt.R
+        env:
+          PW_HTML_ENCRYPT: ${{ secrets.PW_HTML_ENCRYPT }}
+
+      - name: Commit and push encrypted file
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add example_encrypted.html
+          git commit -m 'Update encrypted HTML'
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
