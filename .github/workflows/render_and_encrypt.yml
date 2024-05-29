@@ -1,8 +1,49 @@
+# name: Render and Encrypt Rmd Weekly
+# 
+# on:
+#   schedule:
+#     - cron: '0 0 * * 0' # This cron expression runs the job every Sunday at midnight UTC
+#   workflow_dispatch: # Allows manual triggers
+# 
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+# 
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v2
+# 
+#       - name: Set up R
+#         uses: r-lib/actions/setup-r@v2
+# 
+#       - name: Install dependencies
+#         run: |
+#           R -e "install.packages('remotes')"
+#           R -e "remotes::install_github('dirkschumacher/encryptedRmd', auth_token = Sys.getenv('GH_PAT'))"
+#           R -e "install.packages('rmarkdown')"
+#           R -e "install.packages('digest')"
+# 
+#       - name: Render and Encrypt
+#         run: Rscript render_and_encrypt.R
+#         env:
+#           PW_HTML_ENCRYPT: ${{ secrets.PW_HTML_ENCRYPT }}
+#           GH_PAT: ${{ secrets.GH_PAT }}
+# 
+#       - name: Commit and push encrypted file
+#         run: |
+#           git config --global user.name 'github-actions[bot]'
+#           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+#           git add example_encrypted.html
+#           git commit -m 'Update encrypted HTML'
+#           git push
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          
 name: Render and Encrypt Rmd Weekly
 
 on:
   schedule:
-    - cron: '0 0 * * 0' # This cron expression runs the job every Sunday at midnight UTC
+    - cron: '0 0 * * 0' # Runs every Sunday at midnight UTC
   workflow_dispatch: # Allows manual triggers
 
 jobs:
@@ -11,7 +52,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
@@ -19,9 +60,11 @@ jobs:
       - name: Install dependencies
         run: |
           R -e "install.packages('remotes')"
-          R -e "remotes::install_github('dirkschumacher/encryptedRmd')"
+          R -e "remotes::install_github('dirkschumacher/encryptedRmd', auth_token = Sys.getenv('GH_PAT'))"
           R -e "install.packages('rmarkdown')"
           R -e "install.packages('digest')"
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
 
       - name: Render and Encrypt
         run: Rscript render_and_encrypt.R
@@ -38,3 +81,4 @@ jobs:
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
