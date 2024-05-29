@@ -26,7 +26,8 @@ jobs:
       - name: Install dependencies
         run: |
           R -e "install.packages('remotes')"
-          R -e "remotes::install_local('encryptedRmd')"
+          R -e "install.packages('sodium')"
+          # R -e "remotes::install_local('encryptedRmd')"
           R -e "install.packages('rmarkdown')"
           R -e "install.packages('digest')"
 
