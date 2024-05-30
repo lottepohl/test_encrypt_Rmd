@@ -32,6 +32,8 @@ jobs:
         run: |
           R -e "install.packages('remotes')"
           R -e "install.packages('sodium')"
+          R -e "install.packages('kableExtra')"
+          R -e "install.packages('flexdashboard')"
           R -e "remotes::install_local('encryptedRmd')"
 
       - name: Render and Encrypt
