@@ -40,4 +40,4 @@ vignettes/*.pdf
 
 # other
 index_unencrypted.html
-index.Rmd
+# index.Rmd #needs to be in the github repo so that github actions can access the file.
