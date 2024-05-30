@@ -2,7 +2,7 @@ name: Render and Encrypt Rmd Weekly
 
 on:
   schedule:
-    - cron: '0 0 * * 0'
+    - cron: '0 0 * * 0' # Runs every Sunday at midnight UTC
   workflow_dispatch:
 
 jobs:
@@ -12,6 +12,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsodium-dev
 
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
@@ -23,11 +28,11 @@ jobs:
           key: ${{ runner.os }}-r-${{ hashFiles('**/renv.lock') }}
           restore-keys: ${{ runner.os }}-r-
 
-      - name: Install dependencies
+      - name: Install R packages
         run: |
           R -e "install.packages('remotes')"
           R -e "install.packages('sodium')"
-          # R -e "remotes::install_local('encryptedRmd')"
+          R -e "remotes::install_local('encryptedRmd')"
           R -e "install.packages('rmarkdown')"
           R -e "install.packages('digest')"
 
@@ -45,3 +50,56 @@ jobs:
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+# name: Render and Encrypt Rmd Weekly
+# 
+# on:
+#   schedule:
+#     - cron: '0 0 * * 0' # Runs every Sunday at midnight UTC
+#   workflow_dispatch:
+# 
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+# 
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v3
+# 
+#       - name: Install system dependencies
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install -y libsodium-dev
+# 
+#       - name: Set up R
+#         uses: r-lib/actions/setup-r@v2
+# 
+#       - name: Cache R packages
+#         uses: actions/cache@v3
+#         with:
+#           path: ${{ env.R_LIBS_USER }}
+#           key: ${{ runner.os }}-r-${{ hashFiles('**/renv.lock') }}
+#           restore-keys: ${{ runner.os }}-r-
+# 
+#       - name: Install R packages
+#         run: |
+#           R -e "install.packages('remotes')"
+#           R -e "install.packages('sodium')"
+#           R -e "remotes::install_local('encryptedRmd')"
+#           R -e "install.packages('rmarkdown')"
+#           R -e "install.packages('digest')"
+# 
+#       - name: Render and Encrypt
+#         run: Rscript render_and_encrypt.R
+#         env:
+#           PW_HTML_ENCRYPT: ${{ secrets.PW_HTML_ENCRYPT }}
+# 
+#       - name: Commit and push encrypted file
+#         run: |
+#           git config --global user.name 'github-actions[bot]'
+#           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+#           git add example_encrypted.html
+#           git commit -m 'Update encrypted HTML'
+#           git push
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
